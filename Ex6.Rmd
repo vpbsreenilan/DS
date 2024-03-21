@@ -1,0 +1,203 @@
+---
+title: "Ex 6 - Linear and Logistic Regression"
+author: "V.P.B. Sree Nilan"
+date: "`r Sys.Date()`"
+output: pdf_document
+geometry:
+  left=0.75in,right=0.5in,top=0.5in,bottom=0.5in
+fontsize: 10pt
+spacing: single
+fig_caption: yes
+indent: true
+vspace: -1cm
+header-includes: "\\setlength{\\columnsep}{8pt} - p{0.5\\linewidth}}"
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### 1. Write a R program to do the Linear/Logistic regression with random data points.
+
+```{r}
+(x <- round(runif(10, min = 300, max = 1000)))
+(y <- runif(10, min = 1, max = 2))
+data <- data.frame(x,y)
+model <- lm(y ~ x,data =data)
+model
+n_data <- data.frame(x = c(823))
+pred <- predict(model,newdata=n_data)
+cat("Prediction : ", pred, "\n")
+e <- y - pred
+cat("Error : ", e, "\n")
+rmse <- sqrt(sum(e*e))
+cat("Root Mean Square Error : ", rmse)
+```
+
+### 2. Write a R program to do Linear/Logistic regression for the given California_housing dataset using API
+
+```{r}
+print("Linear Regression")
+library(readr)
+housing <- read_csv("D:\\Nilan\\housing.csv", show_col_types = FALSE)
+head(housing)
+train_indices <- sample(1:nrow(housing), 0.7*nrow(housing))
+train_data <- housing[train_indices,]
+test_data <- housing[-train_indices,]
+model <- lm(median_house_value ~ longitude + latitude + housing_median_age + total_rooms + total_bedrooms + population + households ++median_income + ocean_proximity, data = train_data)
+coefficients(model)
+pred <- predict(model, test_data)
+suppressWarnings(e <- train_data$median_income - pred)
+rmse<-sqrt(sum(e * e))
+cat("Root Mean Square Error : ", rmse, "\n")
+```
+
+```{r}
+print("Logistic Regression")
+library(readr)
+housing <- read_csv("D:\\Nilan\\housing.csv", show_col_types = FALSE)
+head(housing)
+train_indices <- sample(1:nrow(housing), 0.7*nrow(housing))
+train_data <- housing[train_indices,]
+test_data <- housing[-train_indices,]
+model <- glm(median_house_value ~ longitude + latitude + housing_median_age + total_rooms + total_bedrooms + population + households ++median_income + ocean_proximity, data = train_data)
+coefficients(model)
+pred<-predict(model, test_data)
+head(pred)
+suppressWarnings(e<-train_data$median_income - pred)
+head(e)
+rmse<-sqrt(sum(e*e))
+cat("Root Mean Square Error:", rmse, "\n")
+```
+
+### 3. Write a R program to do the Linear/Logistic regression with random data points without APIs
+
+```{r}
+(x <- round(runif(10, min = 300, max = 1000)))
+(y <- runif(10, min = 1, max = 2))
+xb<-mean(x)#mean of x
+yb<-mean(y)#mean of y
+n<-length(y) #length of y
+x2<-x*x # x square
+xy<-x*y # x*y value
+sxy<-sum(xy)
+x3<-xb*xb # xb square
+sx2<-sum(x2)
+a<-(sxy-(n*xb*yb))
+b<-(sx2-(n*x3))
+m<-(a/b)
+cat("slope:",m,"\n")
+c<-yb-m*xb
+cat("intercept:",c,"\n")
+yp<-m*823+c
+cat("prediction:",yp,"\n")
+e<-y-yp
+cat("error:",e,"\n")
+mse<-sum(e*e)
+cat("mean square error:",mse,"\n")
+rmse<-sum(sqrt(mse))
+cat("root mean square error:",rmse,"\n")
+```
+
+### 4. Consider a company comprised a sample of 1000 customers. We need to predict the probability whether a customer will buy (y) a particular magazine or not. Use logistic regression.
+
+```{r}
+n_obs <- 1000
+cust_inco<-sample(15000:30000,n_obs, replace = TRUE)
+interest <- sample(c("yes", "No"), n_obs, replace = TRUE)
+rating <- sample(1:5, n_obs, replace = TRUE)
+buy_or_not <- sample(c("1", "0"), n_obs, replace = TRUE)
+gender <- sample(c("Male", "Female"), n_obs, replace = TRUE)
+age <- sample(20:35, n_obs, replace = TRUE)
+
+# Combine data into a dataframe
+synthetic_data <- data.frame(
+  INCOME=cust_inco ,
+  Age = age,
+  INTEREST = interest,
+  GENDER = gender,
+  RATING = rating,
+  BUY_OR_NOT = buy_or_not
+)
+head(synthetic_data)
+train_indices<-sample(1:nrow(synthetic_data),0.7*nrow(synthetic_data))
+train_data<-synthetic_data[train_indices,]
+test_data<-synthetic_data[-train_indices,]
+model1<-glm(buy_or_not ~ income,data=train_data)
+coefficients(model1)
+pred<-predict(model1,test_data)
+```
+
+####Write a program to predict diabetes Pima Indian Diabetes dataset
+using Logistic Regression Classifier.
+
+```{r}
+library(readr)
+diabetes <- read_csv("diabetes.csv")
+head(diabetes)
+colnames(diabetes)
+train_indices<-sample(1:nrow(diabetes),0.7*nrow(diabetes))
+train_data<-diabetes[train_indices,]
+test_data<-diabetes[-train_indices,]
+model<-lm(Outcome ~ Pregnancies+Glucose+BloodPressure+SkinThickness+Insulin+BMI+DiabetesPedigreeFunction+Age  ,data=train_data)
+coefficients(model)
+pred<-predict(model,test_data)
+#head(pred)
+cat("prediction:",pred,"\n")
+#e<-train_data$Outcome-pred
+#head(e)
+#cat("error:",e,"\n")
+rmse<-sqrt(sum(e*e))
+cat("root mean square error:",rmse,"\n")
+```
+
+```{r}
+library(readr)
+diabetes <- read_csv("diabetes.csv")
+head(diabetes)
+colnames(diabetes)
+train_indices<-sample(1:nrow(diabetes),0.7*nrow(diabetes))
+train_data<-diabetes[train_indices,]
+test_data<-diabetes[-train_indices,]
+model<-glm(Outcome ~ Pregnancies+Glucose+BloodPressure+SkinThickness+Insulin+BMI+DiabetesPedigreeFunction+Age  ,data=train_data)
+coefficients(model)
+pred<-predict(model,test_data)
+head(pred)
+cat("prediction:",pred,"\n")
+e<-train_data$Outcome-pred
+#head(e)
+#cat("error:",e,"\n")
+rmse<-sqrt(sum(e*e))
+cat("root mean square error:",rmse,"\n")
+```
+
+6.  Write a program to predict whether the client will subscribe (1/0)
+    to a term deposit (variable y). The dataset comes from the UCI
+    Machine Learning repository, and it is related to direct marketing
+    campaigns (phone calls) of a Portuguese banking institution.
+
+    ```{r}
+    bank_data <- data.frame(
+      age = rnorm(1000, mean = 40, sd = 10),
+      job = sample(c("management", "blue-collar", "technician", "admin."), 1000, replace = TRUE),
+      marital = sample(c("married", "single", "divorced"), 1000, replace = TRUE),
+      education = sample(c("primary", "secondary", "tertiary"), 1000, replace = TRUE),
+      balance = rnorm(1000, mean = 5000, sd = 10000),
+      subscription = sample(c(0, 1), 1000, replace = TRUE)
+    )
+
+    # Fit logistic regression model
+    logit_model_bank <- glm(subscription ~ ., data = bank_data, family = binomial)
+
+    # Model summary
+    summary(logit_model_bank)
+
+    bank_data$predicted_probability <- predict(logit_model_bank, newdata = bank_data, type = "response")
+
+    # View the predicted probabilities
+    head(bank_data$predicted_probability)
+
+    ```
