@@ -1,0 +1,105 @@
+---
+title: "EX-07"
+author: "Krishna.K-21BCS056"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### 1. Write a Python program to do the Linear/Logistic regression with random data points.
+
+```{r}
+x<-c(534,783,128,703,280,345,561)
+y<-c(2.4,4.1,4.7,8.1,3.5,6.6,7.1)
+data<-data.frame(x,y)
+
+model<-lm(y~x,data=data)
+model
+test<-data.frame(x=c(432))
+prediction<-predict(model,newdata=test)
+cat("Prediction:",prediction,"\n")
+error<-y-prediction
+cat("\nerror:",error,"\n")
+rmse<-sqrt(sum(error*error))
+cat("RootMeanSquareError:",rmse,"\n")
+```
+### 2. Write a Python program to do Linear regression for the given California_housingdataset using API
+
+```{r}
+library(readr)
+housing <- read_csv("housing.csv")
+head(housing)
+
+train_indices<-sample(1:nrow(housing),0.7*nrow(housing))
+train_data<-housing[train_indices,]
+test_data<-housing[-train_indices, ]
+
+model<-lm(median_income~median_house_value,data=train_data)
+
+#test_sample <- sample(1:nrow(test_data), 6)#taking 6 form test data
+#sampled_data <- test_data[test_sample, ] 
+
+prediction<-predict(model,newdata=test_data)
+head(prediction)
+#cat("Prediction:",prediction,"\n")
+error<-test_data$median_income-prediction
+cat("\nerror:",error,"\n")
+rmse<-sqrt(sum(error*error))
+cat("RootMeanSquareError:",rmse,"\n")
+```
+
+### 5. Write a program to predict diabetes Pima Indian Diabetes dataset using Logistic Regression Classifier
+
+```{r}
+library(readr)
+diabetes <- read_csv("diabetes.csv")
+
+train_indices<-sample(1:nrow(diabetes),0.7*nrow(diabetes))
+train_data<-diabetes[train_indices,]
+test_data<-diabetes[-train_indices,]
+
+model<-lm(Outcome~BMI*Age,data=train_data)
+model
+#test_sample <- sample(1:nrow(test_data), 6)#taking 6 form test data
+#sampled_data <- test_data[test_sample, ] 
+
+prediction<-predict(model,newdata=test_data)
+#cat("Prediction:",prediction,"\n")
+error<-test_data-prediction
+
+print("Error:")
+error
+
+rmse<-sqrt(sum(error*error))
+cat("RootMeanSquareError:",rmse,"\n")
+```
+
+
+### 3.Write a Python program to do the Linear regression with random data points without APIs.
+
+```{r}
+x<-c(368,340,665,954,331,556,376)
+y<-c(1.7,1.5,2.8,5,1.3,2.2,1.3)
+mx<-mean(x)
+my<-mean(y)
+n<-length(y)
+xy<-x*y # x*y values
+sxy<-sum(xy) #sum of xy values
+a<-(sxy-(n*mx*my))
+sx2<-sum(x*x)#x square
+b<-(sx2-(n*mx*mx))
+slope<-a/b
+cat("slope:",m,"\n")
+c<-my-m*mx
+cat("intercept:",c,"\n")
+yp<-m*823+c
+error<-y-yp
+cat("error:",error,"\n")
+mse<-sum(e*e)
+cat("mean square error:",mse,"\n")
+rmse<-sum(sqrt(mse))
+cat("root mean square error:",rmse,"\n")
+```
